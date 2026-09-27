@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi ASTS Akidah Akhlak - MTs Mu'allimin NU</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #065f46;
+            --bg-light: #f0fdf4;
+            --text-main: #1f2937;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header-logo {
+            max-height: 70px;
+            max-width: 70px;
+            object-fit: contain;
+        }
+
+        .header-text h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="password"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            background-color: #e5e7eb;
+            font-weight: 600;
+        }
+
+        .nav-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Timer Sticky */
+        .timer-box {
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            background: #1e293b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* Question Styles */
+        .question-card {
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #fafafa;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .option-item:hover {
+            background: #f0fdf4;
+        }
+
+        .match-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        /* Result Container */
+        .result-box {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .badge-pass {
+            color: #15803d;
+            background-color: #dcfce7;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-fail {
+            color: #b91c1c;
+            background-color: #fee2e2;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <img id="app-logo" class="header-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>" alt="Logo Sekolah">
+            <div class="header-text">
+                <h1>ASESMEN SUMATIF TENGAH SEMESTER (ASTS)</h1>
+                <p>Mata Pelajaran: Akidah Akhlak | Kelas VII MTs Mu'allimin NU</p>
+                <p><small>Penyusun: Amirotul Kayyisah, S.Pd.</small></p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- LOGIN SCREEN -->
+        <div id="screen-login" class="card">
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="switchLoginTab('siswa')">Akses Siswa</div>
+                <div class="nav-tab" onclick="switchLoginTab('admin')">Akses Admin / Guru</div>
+            </div>
+
+            <!-- Login Siswa -->
+            <form id="form-login-siswa" onsubmit="handleLoginSiswa(event)">
+                <div class="form-group">
+                    <label>Nama Lengkap Siswa</label>
+                    <input type="text" id="siswa-nama" required placeholder="Contoh: Ahmad Raihan">
+                </div>
+                <div class="form-group">
+                    <label>Kelas</label>
+                    <select id="siswa-kelas" required>
+                        <option value="VII">Kelas VII</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nomor Presensi (Password)</label>
+                    <input type="password" id="siswa-presensi" required placeholder="Masukkan Nomor Presensi">
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Mulai Ujian</button>
+            </form>
+
+            <!-- Login Admin -->
+            <form id="form-login-admin" class="hidden" onsubmit="handleLoginAdmin(event)">
+                <div class="form-group">
+                    <label>Username Admin</label>
+                    <input type="text" id="admin-user" required placeholder="Default: admin">
+                </div>
+                <div class="form-group">
+                    <label>Password Admin</label>
+                    <input type="password" id="admin-pass" required placeholder="Default: admin123">
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Login Admin</button>
+            </form>
+        </div>
+
+        <!-- EXAM SCREEN -->
+        <div id="screen-exam" class="hidden">
+            <div class="timer-box">
+                <div>Peserta: <span id="timer-nama-siswa">-</span> (<span id="timer-presensi-siswa">-</span>)</div>
+                <div>Sisa Waktu: <span id="timer-display">90:00</span></div>
+            </div>
+
+            <form id="form-exam" onsubmit="handleSubmitExam(event)">
+                <div class="card">
+                    <h2>Bagian I: Pilihan Ganda (15 Soal)</h2>
+                    <p style="margin-bottom: 15px; color: #6b7280; font-size:0.9rem;">Pilihlah satu jawaban yang paling tepat.</p>
+                    <div id="container-pg"></div>
+                </div>
+
+                <div class="card">
+                    <h2>Bagian II: Pilihan Ganda Kompleks (10 Soal)</h2>
+                    <p style="margin-bottom: 15px; color: #6b7280; font-size:0.9rem;">Pilihlah lebih dari satu jawaban yang benar.</p>
+                    <div id="container-pgk"></div>
+                </div>
+
+                <div class="card">
+                    <h2>Bagian III: Menjodohkan (10 Soal)</h2>
+                    <p style="margin-bottom: 15px; color: #6b7280; font-size:0.9rem;">Jodohkan pernyataan di kolom kiri dengan pilihan yang tepat di kolom kanan.</p>
+                    <div id="container-jodoh"></div>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; padding: 15px; font-size: 1.1rem;">Kirim & Selesaikan Ujian</button>
+            </form>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="screen-result" class="card hidden">
+            <div class="result-box">
+                <h2>Hasil Asesmen Sumatif Tengah Semester</h2>
+                <p style="margin-top: 5px;">Mata Pelajaran: Akidah Akhlak | KKM: 80</p>
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #e5e7eb;">
+
+                <div style="text-align: left; max-width: 400px; margin: 0 auto; line-height: 1.8;">
+                    <p><strong>Nama Lengkap:</strong> <span id="res-nama"></span></p>
+                    <p><strong>Kelas:</strong> <span id="res-kelas"></span></p>
+                    <p><strong>No. Presensi:</strong> <span id="res-presensi"></span></p>
+                    <p><strong>Percobaan Ke-:</strong> <span id="res-attempt"></span> dari 2</p>
+                </div>
+
+                <div class="score-display" id="res-score">0</div>
+                <div id="res-status"></div>
+
+                <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="downloadPDF()" class="btn">Download Hasil (PDF)</button>
+                    <button id="btn-re-test" onclick="retryExam()" class="btn btn-secondary hidden">Ulangi Ujian (Sisa 1x)</button>
+                    <button onclick="logout()" class="btn btn-danger">Keluar / Selesai</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN DASHBOARD -->
+        <div id="screen-admin" class="card hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Panel Kontrol Admin / Guru</h2>
+                <button onclick="logout()" class="btn btn-danger">Logout</button>
+            </div>
+
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="switchAdminTab('ujicoba')">Uji Coba Aplikasi</div>
+                <div class="nav-tab" onclick="switchAdminTab('logo')">Pengaturan Logo</div>
+                <div class="nav-tab" onclick="switchAdminTab('password')">Ganti Password</div>
+                <div class="nav-tab" onclick="switchAdminTab('editsoal')">Kelola Soal</div>
+            </div>
+
+            <!-- Admin Tab: Uji Coba -->
+            <div id="admin-tab-ujicoba">
+                <h3>Uji Coba Asesmen Sebagai Siswa</h3>
+                <p style="margin-bottom: 15px; color: #6b7280;">Sebagai Admin, Anda dapat melakukan uji coba pengerjaan soal tanpa batas percobaan.</p>
+                <button onclick="startAdminTest()" class="btn">Mulai Mode Uji Coba</button>
+            </div>
+
+            <!-- Admin Tab: Pengaturan Logo -->
+            <div id="admin-tab-logo" class="hidden">
+                <h3>Pengaturan Logo Sekolah</h3>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Unggah Logo Baru (PNG/JPG)</label>
+                    <input type="file" id="input-logo-file" accept="image/*" onchange="previewAndSaveLogo(event)">
+                </div>
+            </div>
+
+            <!-- Admin Tab: Ganti Password -->
+            <div id="admin-tab-password" class="hidden">
+                <h3>Ganti Password Admin</h3>
+                <form onsubmit="handleChangeAdminPassword(event)" style="max-width: 400px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Password Baru</label>
+                        <input type="password" id="new-admin-pass" required placeholder="Masukkan password baru">
+                    </div>
+                    <button type="submit" class="btn">Simpan Password Baru</button>
+                </form>
+            </div>
+
+            <!-- Admin Tab: Kelola Soal -->
+            <div id="admin-tab-editsoal" class="hidden">
+                <h3>Daftar Soal & Kunci Jawaban</h3>
+                <p style="margin-bottom: 15px; color: #6b7280; font-size: 0.9rem;">Anda dapat memantau atau memperbarui data soal secara ringkas.</p>
+                <div id="admin-soal-list"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Data Bank Soal (35 Soal)
+        const defaultQuestions = {
+            pg: [
+                {
+                    id: "pg_1",
+                    q: "Ahmad menemukan uang di halaman sekolah. Meskipun tidak ada orang yang melihatnya, ia memilih menyerahkannya kepada guru karena meyakini Allah Swt. Maha Melihat dan mendengar segala perbuatannya. Sikap Ahmad tersebut menunjukkan pengamalan dari...",
+                    options: { A: "Sifat-sifat kebiasaan manusia", B: "Hakikat dan landasan akidah Islam", C: "Adat istiadat masyarakat setempat", D: "Aturan hukum pidana modern" },
+                    ans: "B"
+                },
+                {
+                    id: "pg_2",
+                    q: "Fatimah selalu rajin beribadah dan berbuat baik kepada sesama. Ia meyakini bahwa seluruh fondasi keyakinan dalam Islam harus bersumber langsung dari Al-Qur'an dan Hadis. Landasan utama akidah Islam yang dimaksud adalah...",
+                    options: { A: "Al-Qur'an dan Hadis", B: "Pendapat para tokoh ilmiah", C: "Tradisi leluhur masyarakat", D: "Buku undang-undang negara" },
+                    ans: "A"
+                },
+                {
+                    id: "pg_3",
+                    q: "Seorang pelajar muslim berusaha agar hatinya senantiasa tenang dan terhindar dari rasa cemas berlebihan terhadap urusan duniawi. Tujuan utama mempelajari dan meneguhkan akidah Islam dalam diri seorang muslim adalah untuk...",
+                    options: { A: "Mendapatkan pujian dari teman-teman", B: "Memperoleh kebahagiaan dunia dan akhirat", C: "Menunjukkan kehebatan berdebat", D: "Menumpuk kekayaan materiil" },
+                    ans: "B"
+                },
+                {
+                    id: "pg_4",
+                    q: "Dalam kehidupan sehari-hari, seorang muslim yang telah mengucapkan dua kalimat syahadat wajib meyakini dalam hati dan mengamalkannya dengan anggota badan. Hubungan antara iman, islam, dan ihsan adalah...",
+                    options: { A: "Tiga aspek terpisah yang tidak bersangkutan", B: "Satu kesatuan utuh yang saling melengkapi", C: "Pilihan yang boleh diambil salah satunya saja", D: "Aturan yang hanya berlaku bagi ulama" },
+                    ans: "B"
+                },
+                {
+                    id: "pg_5",
+                    q: "Nadia beribadah dengan penuh kekhusyukan seolah-olah ia melihat Allah Swt. Jika ia tidak dapat melihat-Nya, ia yakin sepenuh hati bahwa Allah Swt. pasti melihatnya. Sikap Nadia menggambarkan tingkatan...",
+                    options: { A: "Iman", B: "Islam", C: "Ihsan", D: "Taqwa pilihan" },
+                    ans: "C"
+                },
+                {
+                    id: "pg_6",
+                    q: "Bumi, matahari, dan planet-planet bergerak pada garis edarnya secara teratur tanpa pernah bertabrakan selama berabad-abad. Fenomena alam ini membuktikan keberadaan Allah Swt. melalui sifat...",
+                    options: { A: "Wujud dan Qidam", B: "Huduth dan Fana", C: "Ummiyah", D: "Karahah" },
+                    ans: "A"
+                },
+                {
+                    id: "pg_7",
+                    q: "Allah Swt. ada tanpa diawali oleh ketiadaan, sedangkan seluruh makhluk ciptaan-Nya diciptakan dari tidak ada menjadi ada. Sifat wajib bagi Allah yang bermakna 'Terdahulu/Awal' adalah...",
+                    options: { A: "Baqa'", B: "Qidam", C: "Mukhalafatu lil hawaditsi", D: "Wahdaniyah" },
+                    ans: "B"
+                },
+                {
+                    id: "pg_8",
+                    q: "Manusia membutuhkan bantuan orang lain untuk memenuhi kebutuhan hidupnya. Sebaliknya, Allah Swt. tidak memerlukan bantuan siapa pun dan berdiri sendiri. Sifat ini dinamakan...",
+                    options: { A: "Qiyamuhu binafsihi", B: "Qudrat", C: "Iradat", D: "Hayat" },
+                    ans: "A"
+                },
+                {
+                    id: "pg_9",
+                    q: "Seorang siswa berikhtiar belajar sungguh-sungguh untuk ujian, namun ia menyerahkan hasil akhirnya kepada ketetapan dan kehendak Allah Swt. Hal ini menunjukkan keyakinan terhadap sifat wajib Allah yaitu...",
+                    options: { A: "Sama'", B: "Iradat", C: "Basar", D: "Kalam" },
+                    ans: "B"
+                },
+                {
+                    id: "pg_10",
+                    q: "Pak Zaky adalah pengusaha sukses. Ia menyadari bahwa seluruh harta benda yang dimilikinya dapat hancur dalam sekejap jika bencana datang, sedangkan Allah Swt. Maha Kekal. Sikap ini lahir dari penghayatan sifat...",
+                    options: { A: "Baqa'", B: "Fana'", C: "Kalam", D: "Sama'" },
+                    ans: "A"
+                },
+                {
+                    id: "pg_11",
+                    q: "Ketika seseorang menyadari telah berbuat kesalahan dengan tidak sengaja mengambil barang milik temannya, ia segera mengembalikannya dan memohon ampun kepada Allah Swt. Perbuatan tersebut merupakan penerapan dari...",
+                    options: { A: "Taat", B: "Tobat", C: "Istiqomah", D: "Ikhlas" },
+                    ans: "B"
+                },
+                {
+                    id: "pg_12",
+                    q: "Zaid selalu menjalankan perintah guru dan orang tua selama tidak melanggar syariat agama, serta tepat waktu menunaikan shalat lima waktu. Sikap Zaid mencerminkan perilaku...",
+                    options: { A: "Taat", B: "Tobat", C: "Riya'", D: "Suma'h" },
+                    ans: "A"
+                },
+                {
+                    id: "pg_13",
+                    q: "Aisyah terus berbuat baik dan konsisten mendirikan shalat dhuha setiap pagi di sekolah, meskipun kadang diejek oleh beberapa temannya. Sikap pantang menyerah dan konsisten ini dinamakan...",
+                    options: { A: "Ikhlas", B: "Istiqomah", C: "Tobat", D: "Tawakkal" },
+                    ans: "B"
+                },
+                {
+                    id: "pg_14",
+                    q: "Hasan memberikan bantuan infak ke kotak amal masjid tanpa memberitahukan kepada teman-temannya dan tanpa mengharapkan pujian. Sikap murni hanya mengharap ridha Allah ini disebut...",
+                    options: { A: "Ikhlas", B: "Istiqomah", C: "Taat", D: "Tobat" },
+                    ans: "A"
+                },
+                {
+                    id: "pg_15",
+                    q: "Salah satu ciri utama dari seseorang yang menerapkan ikhlas dalam kehidupan sehari-hari saat menjalankan perintah agama adalah...",
+                    options: { A: "Ingin dipuji oleh guru dan orang tua", B: "Hatinya merasa tenang dan tidak terpengaruh pujian atau celaan", C: "Mengharapkan balasan hadiah materiil", D: "Hanya beribadah saat dilihat orang banyak" },
+                    ans: "B"
+                }
+            ],
+            pgk: [
+                {
+                    id: "pgk_1",
+                    q: "Manakah dari pernyataan berikut yang merupakan pilar utama dari rukun Iman? (Pilih lebih dari satu)",
+                    options: { A: "Iman kepada Allah Swt.", B: "Iman kepada Malaikat-Malaikat-Nya", C: "Menjalankan ibadah haji bila mampu", D: "Iman kepada Hari Akhir" },
+                    ans: ["A", "B", "D"]
+                },
+                {
+                    id: "pgk_2",
+                    q: "Berikut ini yang termasuk sifat-sifat Wajib bagi Allah Swt. dalam kelompok Sifat Salbiyah adalah... (Pilih lebih dari satu)",
+                    options: { A: "Qidam", B: "Baqa'", C: "Wahdaniyah", D: "Wujud" },
+                    ans: ["A", "B", "C"]
+                },
+                {
+                    id: "pgk_3",
+                    q: "Manakah yang merupakan bentuk penerapan konsep Ihsan dalam kehidupan sekolah? (Pilih lebih dari satu)",
+                    options: { A: "Mengerjakan ujian dengan jujur karena meyakini Allah Maha Melihat", B: "Belajar hanya saat akan diawasi oleh wali kelas", C: "Menjaga kebersihan kelas walau tidak ada jadwal piket", D: "Membantu teman yang kesulitan memahami pelajaran dengan tulus" },
+                    ans: ["A", "C", "D"]
+                },
+                {
+                    id: "pgk_4",
+                    q: "Pernyataan berikut yang merupakan ciri-ciri orang yang bertobat dengan sungguh-sungguh (Tobat Nasuha) adalah... (Pilih lebih dari satu)",
+                    options: { A: "Menyesali perbuatan dosa yang telah dilakukan", B: "Mengulangi perbuatan salah jika ada kesempatan", C: "Meninggalkan perbuatan maksiat tersebut", D: "Bertekad kuat untuk tidak mengulanginya lagi" },
+                    ans: ["A", "C", "D"]
+                },
+                {
+                    id: "pgk_5",
+                    q: "Manakah sifat yang tergolong Sifat Mustahil bagi Allah Swt.? (Pilih lebih dari satu)",
+                    options: { A: "Huduth (Baru)", B: "Fana' (Rusak)", C: "Ajzun (Lemas/Mampu)", D: "Jahlun (Bodoh)" },
+                    ans: ["A", "B", "D"]
+                },
+                {
+                    id: "pgk_6",
+                    q: "Ciri-ciri orang yang memiliki sifat Istiqomah dalam menjalankan ibadah adalah... (Pilih lebih dari satu)",
+                    options: { A: "Sering menunda-nunda waktu shalat", B: "Konsisten menjalankan kebaikan meski banyak rintangan", C: "Mempunyai pendirian yang teguh dalam kebenaran", D: "Beribadah hanya saat suasana hatinya sedang senang" },
+                    ans: ["B", "C"]
+                },
+                {
+                    id: "pgk_7",
+                    q: "Pernyataan yang tepat mengenai Sifat Ma'ani pada Allah Swt. adalah... (Pilih lebih dari satu)",
+                    options: { A: "Sifat yang wajib ada pada zat Allah", B: "Terdiri dari Qudrat, Iradat, 'Ilmu, Hayat, Sama', Basar, Kalam", C: "Sifat yang menolak sifat-sifat yang tidak layak bagi Allah", D: "Sifat yang menggambarkan kepatuhan manusia" },
+                    ans: ["A", "B"]
+                },
+                {
+                    id: "pgk_8",
+                    q: "Manfaat yang diperoleh seorang muslim yang menerapkan sifat Taat kepada Allah dan Rasul-Nya adalah... (Pilih lebih dari satu)",
+                    options: { A: "Mendapatkan ketenangan jiwa dan kedamaian hati", B: "Mendapat pahala dan ridha dari Allah Swt.", C: "Dihormati dan ditakuti oleh lawan", D: "Terhindar dari perbuatan keji dan munkar" },
+                    ans: ["A", "B", "D"]
+                },
+                {
+                    id: "pgk_9",
+                    q: "Perilaku yang merusak atau menghancurkan keikhlasan seseorang dalam beramal adalah... (Pilih lebih dari satu)",
+                    options: { A: "Riya' (ingin dilihat dan dipuji orang)", B: "Suma'h (ingin didengar kebaikannya)", C: "Tawadhu' (rendah hati)", D: "Ujub (bangga diri berlebihan)" },
+                    ans: ["A", "B", "D"]
+                },
+                {
+                    id: "pgk_10",
+                    q: "Berikut ini yang termasuk pengamalan sifat Wujud keimanan kepada Allah Swt. dalam lingkungan masyarakat adalah... (Pilih lebih dari satu)",
+                    options: { A: "Ikut serta dalam kegiatan gotong royong warga", B: "Menjaga keharmonisan dan tidak menyebarkan berita bohong", C: "Apatis terhadap kesulitan tetangga dekat", D: "Saling menghormati dan menyapa antar warga" },
+                    ans: ["A", "B", "D"]
+                }
+            ],
+            jodoh: [
+                { id: "j_1", left: "Landasan utama ajaran akidah Islam", right: "Al-Qur'an dan Hadis" },
+                { id: "j_2", left: "Tingkatan ikhlas dan pengawasan diri", right: "Ihsan" },
+                { id: "j_3", left: "Sifat wajib Allah yang artinya Maha Kuasa", right: "Qudrat" },
+                { id: "j_4", left: "Sifat mustahil yang artinya Bingkak / Bodoh", right: "Jahlun" },
+                { id: "j_5", left: "Sifat wajib Allah yang artinya Berbeda dengan ciptaan-Nya", right: "Mukhalafatu lil hawaditsi" },
+                { id: "j_6", left: "Kembali ke jalan yang benar dan memohon ampunan", right: "Tobat" },
+                { id: "j_7", left: "Tunduk dan patuh terhadap perintah Allah dan Rasul", right: "Taat" },
+                { id: "j_8", left: "Sikap teguh pendirian dan konsisten dalam kebaikan", right: "Istiqomah" },
+                { id: "j_9", left: "Melakukan amal semata-mata mengharap ridha Allah Swt.", right: "Ikhlas" },
+                { id: "j_10", left: "Sifat Jaiz bagi Allah Swt.", right: "Fi'lu kulli mumbkinin au tarkuhu" }
+            ]
+        };
+
+        // State Aplikasi
+        let appState = {
+            questions: JSON.parse(localStorage.getItem('asts_questions')) || defaultQuestions,
+            adminPass: localStorage.getItem('asts_admin_pass') || 'admin123',
+            customLogo: localStorage.getItem('asts_logo') || null,
+            currentUser: null,
+            timerInterval: null,
+            timeLeft: 90 * 60, // 90 menit dalam detik
+            attempts: JSON.parse(localStorage.getItem('asts_attempts')) || {}
+        };
+
+        // Inisialisasi Aplikasi
+        window.onload = function() {
+            if(appState.customLogo) {
+                document.getElementById('app-logo').src = appState.customLogo;
+            }
+        };
+
+        // Switching Tab Login
+        function switchLoginTab(type) {
+            const tabs = document.querySelectorAll('#screen-login .nav-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            if(type === 'siswa') {
+                tabs[0].classList.add('active');
+                document.getElementById('form-login-siswa').classList.remove('hidden');
+                document.getElementById('form-login-admin').classList.add('hidden');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('form-login-siswa').classList.add('hidden');
+                document.getElementById('form-login-admin').classList.remove('hidden');
+            }
+        }
+
+        // Login Handler Siswa
+        function handleLoginSiswa(e) {
+            e.preventDefault();
+            const nama = document.getElementById('siswa-nama').value.trim();
+            const kelas = document.getElementById('siswa-kelas').value;
+            const presensi = document.getElementById('siswa-presensi').value.trim();
+
+            if(!nama || !presensi) return alert('Silahkan lengkapi data login.');
+
+            const userKey = `siswa_${nama.toLowerCase()}_${presensi}`;
+            const currentAttempts = appState.attempts[userKey] || 0;
+
+            if(currentAttempts >= 2) {
+                alert('Anda telah menggunakan batas maksimal kesempatan pengerjaan (2 kali).');
+                return;
+            }
+
+            appState.currentUser = {
+                role: 'siswa',
+                nama: nama,
+                kelas: kelas,
+                presensi: presensi,
+                key: userKey,
+                attemptNumber: currentAttempts + 1
+            };
+
+            startExam();
+        }
+
+        // Login Handler Admin
+        function handleLoginAdmin(e) {
+            e.preventDefault();
+            const u = document.getElementById('admin-user').value.trim();
+            const p = document.getElementById('admin-pass').value.trim();
+
+            if(u === 'admin' && p === appState.adminPass) {
+                appState.currentUser = { role: 'admin', nama: 'Administrator / Guru' };
+                showScreen('screen-admin');
+                renderAdminQuestions();
+            } else {
+                alert('Username atau Password Admin salah!');
+            }
+        }
+
+        // Start Admin Testing Mode
+        function startAdminTest() {
+            appState.currentUser = {
+                role: 'admin_test',
+                nama: 'Admin (Mode Uji Coba)',
+                kelas: 'VII',
+                presensi: '00',
+                key: 'admin_tester',
+                attemptNumber: 1
+            };
+            startExam();
+        }
+
+        // Start Exam Render
+        function startExam() {
+            showScreen('screen-exam');
+            document.getElementById('timer-nama-siswa').innerText = appState.currentUser.nama;
+            document.getElementById('timer-presensi-siswa').innerText = `Presensi: ${appState.currentUser.presensi}`;
+            
+            renderExamQuestions();
+            startTimer();
+        }
+
+        // Render Soal Ujian
+        function renderExamQuestions() {
+            // Render PG
+            const containerPG = document.getElementById('container-pg');
+            containerPG.innerHTML = appState.questions.pg.map((q, idx) => `
+                <div class="question-card">
+                    <div class="question-text">${idx + 1}. ${q.q}</div>
+                    <div class="options-group">
+                        ${Object.keys(q.options).map(opt => `
+                            <label class="option-item">
+                                <input type="radio" name="ans_${q.id}" value="${opt}" required>
+                                <span><strong>${opt}.</strong>${q.options[opt]}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            // Render PGK
+            const containerPGK = document.getElementById('container-pgk');
+            containerPGK.innerHTML = appState.questions.pgk.map((q, idx) => `
+                <div class="question-card">
+                    <div class="question-text">${idx + 16}. ${q.q}</div>
+                    <div class="options-group">
+                        ${Object.keys(q.options).map(opt => `
+                            <label class="option-item">
+                                <input type="checkbox" name="ans_${q.id}" value="${opt}">
+                                <span><strong>${opt}.</strong>${q.options[opt]}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Menjodohkan
+            const containerJodoh = document.getElementById('container-jodoh');
+            // Shuffle right options for matching
+            const rightOptions = [...appState.questions.jodoh.map(j => j.right)].sort(() => Math.random() - 0.5);
+            
+            containerJodoh.innerHTML = appState.questions.jodoh.map((q, idx) => `
+                <div class="match-pair">
+                    <div><strong>${idx + 26}.</strong> ${q.left}</div>
+                    <div>
+                        <select name="ans_${q.id}" required>
+                            <option value="">-- Pilih Pasangan --</option>
+                            ${rightOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Timer Logic
+        function startTimer() {
+            appState.timeLeft = 90 * 60;
+            updateTimerDisplay();
+            
+            clearInterval(appState.timerInterval);
+            appState.timerInterval = setInterval(() => {
+                appState.timeLeft--;
+                updateTimerDisplay();
+
+                if(appState.timeLeft <= 0) {
+                    clearInterval(appState.timerInterval);
+                    alert('Waktu ujian telah habis! Jawaban Anda akan dikirim otomatis.');
+                    handleSubmitExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(appState.timeLeft / 60);
+            const s = appState.timeLeft % 60;
+            document.getElementById('timer-display').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        // Submit and Calculate Score
+        function handleSubmitExam(e) {
+            if(e) e.preventDefault();
+            clearInterval(appState.timerInterval);
+
+            let correctCount = 0;
+            const totalQuestions = 35;
+
+            // Check PG (15)
+            appState.questions.pg.forEach(q => {
+                const selected = document.querySelector(`input[name="ans_${q.id}"]:checked`);
+                if(selected && selected.value === q.ans) {
+                    correctCount++;
+                }
+            });
+
+            // Check PGK (10)
+            appState.questions.pgk.forEach(q => {
+                const selected = Array.from(document.querySelectorAll(`input[name="ans_${q.id}"]:checked`)).map(cb => cb.value);
+                const isCorrect = q.ans.length === selected.length && q.ans.every(v => selected.includes(v));
+                if(isCorrect) {
+                    correctCount++;
+                }
+            });
+
+            // Check Menjodohkan (10)
+            appState.questions.jodoh.forEach(q => {
+                const selected = document.querySelector(`select[name="ans_${q.id}"]`);
+                if(selected && selected.value === q.right) {
+                    correctCount++;
+                }
+            });
+
+            const finalScore = Math.round((correctCount / totalQuestions) * 100);
+
+            // Save Attempt if Siswa
+            if(appState.currentUser.role === 'siswa') {
+                appState.attempts[appState.currentUser.key] = appState.currentUser.attemptNumber;
+                localStorage.setItem('asts_attempts', JSON.stringify(appState.attempts));
+            }
+
+            displayResults(finalScore);
+        }
+
+        // Display Results
+        function displayResults(score) {
+            showScreen('screen-result');
+            document.getElementById('res-nama').innerText = appState.currentUser.nama;
+            document.getElementById('res-kelas').innerText = appState.currentUser.kelas;
+            document.getElementById('res-presensi').innerText = appState.currentUser.presensi;
+            document.getElementById('res-attempt').innerText = appState.currentUser.attemptNumber;
+            document.getElementById('res-score').innerText = score;
+
+            const isPass = score >= 80;
+            document.getElementById('res-status').innerHTML = isPass 
+                ? `<span class="badge-pass">TUNTAS (Memenuhi KKM 80)</span>`
+                : `<span class="badge-fail">BELUM TUNTAS (Di bawah KKM 80)</span>`;
+
+            const btnRetry = document.getElementById('btn-re-test');
+            if(appState.currentUser.role === 'siswa' && appState.currentUser.attemptNumber < 2) {
+                btnRetry.classList.remove('hidden');
+            } else {
+                btnRetry.classList.add('hidden');
+            }
+        }
+
+        // Retry Exam Logic
+        function retryExam() {
+            appState.currentUser.attemptNumber++;
+            startExam();
+        }
+
+        // Download PDF
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text("Laporan Hasil Asesmen Sumatif Tengah Semester", 20, 20);
+            doc.setFontSize(12);
+            doc.text("MTs Mu'allimin NU", 20, 28);
+            doc.text("----------------------------------------------------------------", 20, 34);
+
+            doc.text(`Nama Lengkap   : ${appState.currentUser.nama}`, 20, 45);
+            doc.text(`Kelas          : ${appState.currentUser.kelas}`, 20, 53);
+            doc.text(`No. Presensi   : ${appState.currentUser.presensi}`, 20, 61);
+            doc.text(`Mata Pelajaran : Akidah Akhlak`, 20, 69);
+            doc.text(`Penyusun Soal  : Amirotul Kayyisah, S.Pd.`, 20, 77);
+            doc.text(`Percobaan Ke-  : ${appState.currentUser.attemptNumber}`, 20, 85);
+
+            const score = document.getElementById('res-score').innerText;
+            doc.setFontSize(14);
+            doc.text(`Nilai Akhir    : ${score}`, 20, 100);
+            doc.text(`Status KKM     : ${score >= 80 ? 'TUNTAS' : 'BELUM TUNTAS'}`, 20, 108);
+
+            doc.save(`Hasil_ASTS_${appState.currentUser.nama.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        // Navigation Admin Tabs
+        function switchAdminTab(tabName) {
+            const tabs = document.querySelectorAll('#screen-admin .nav-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            document.getElementById('admin-tab-ujicoba').classList.add('hidden');
+            document.getElementById('admin-tab-logo').classList.add('hidden');
+            document.getElementById('admin-tab-password').classList.add('hidden');
+            document.getElementById('admin-tab-editsoal').classList.add('hidden');
+
+            if(tabName === 'ujicoba') {
+                tabs[0].classList.add('active');
+                document.getElementById('admin-tab-ujicoba').classList.remove('hidden');
+            } else if(tabName === 'logo') {
+                tabs[1].classList.add('active');
+                document.getElementById('admin-tab-logo').classList.remove('hidden');
+            } else if(tabName === 'password') {
+                tabs[2].classList.add('active');
+                document.getElementById('admin-tab-password').classList.remove('hidden');
+            } else if(tabName === 'editsoal') {
+                tabs[3].classList.add('active');
+                document.getElementById('admin-tab-editsoal').classList.remove('hidden');
+            }
+        }
+
+        // Preview and Save Logo
+        function previewAndSaveLogo(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const logoData = evt.target.result;
+                    document.getElementById('app-logo').src = logoData;
+                    localStorage.setItem('asts_logo', logoData);
+                    alert('Logo sekolah berhasil diperbarui!');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Change Admin Password
+        function handleChangeAdminPassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('new-admin-pass').value.trim();
+            if(newPass) {
+                appState.adminPass = newPass;
+                localStorage.setItem('asts_admin_pass', newPass);
+                alert('Password admin berhasil diubah!');
+                document.getElementById('new-admin-pass').value = '';
+            }
+        }
+
+        // Render Admin Soal List
+        function renderAdminQuestions() {
+            const container = document.getElementById('admin-soal-list');
+            let html = '<h4>Soal Pilihan Ganda (15)</h4><ol style="margin-left: 20px; margin-bottom: 20px;">';
+            appState.questions.pg.forEach(q => {
+                html += `<li>${q.q} <br><strong>Kunci: ${q.ans}</strong></li><br>`;
+            });
+            html += '</ol><h4>Soal Pilihan Ganda Kompleks (10)</h4><ol start="16" style="margin-left: 20px; margin-bottom: 20px;">';
+            appState.questions.pgk.forEach(q => {
+                html += `<li>${q.q} <br><strong>Kunci: ${q.ans.join(', ')}</strong></li><br>`;
+            });
+            html += '</ol><h4>Soal Menjodohkan (10)</h4><ol start="26" style="margin-left: 20px;">';
+            appState.questions.jodoh.forEach(q => {
+                html += `<li>${q.left} &rightarrow; <strong>${q.right}</strong></li><br>`;
+            });
+            html += '</ol>';
+            container.innerHTML = html;
+        }
+
+        // Helper Screen Display
+        function showScreen(id) {
+            document.getElementById('screen-login').classList.add('hidden');
+            document.getElementById('screen-exam').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-admin').classList.add('hidden');
+
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        // Logout
+        function logout() {
+            clearInterval(appState.timerInterval);
+            appState.currentUser = null;
+            showScreen('screen-login');
+        }
+    </script>
+</body>
+</html>
